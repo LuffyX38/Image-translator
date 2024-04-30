@@ -78,7 +78,7 @@ exports.login = async (req, res) => {
             ),
             httpOnly: true,
           };
-          console.log(`${result[0].name} logged in to system`);
+          console.log(`${result[0].name} logged in to website`);
           res.cookie("jwt", token, cookieOptions);
           res.status(200).redirect("/");
         }
@@ -101,7 +101,7 @@ exports.isLoggedIn = async (req, res, next) => {
         "SELECT * FROM users WHERE id = ?",
         [decoded.id],
         (err, result) => {
-          console.log(result);
+          // console.log(result);
           if (!result) {
             return next();
           }

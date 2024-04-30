@@ -2,6 +2,7 @@ const express = require("express");
 //starts express app
 const app = express();
 const dotenv = require("dotenv");
+const compression = require("compression");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const mysql = require("mysql");
@@ -23,6 +24,7 @@ const db = mysql.createConnection({
   database: process.env.DATABASE,
 });
 
+app.use(compression());
 app.set("view engine", "hbs");
 
 db.connect((err) => {
