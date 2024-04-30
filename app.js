@@ -1,5 +1,5 @@
 const express = require("express");
-//start express app
+//starts express app
 const app = express();
 const dotenv = require("dotenv");
 const path = require("path");
