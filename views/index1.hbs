@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Custom styles */
+      body {
+        background-color: #f8f9fa;
+      }
+      .custom-container {
+        margin-top: 50px;
+      }
+      .custom-card {
+        border-radius: 10px;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+      }
+      .custom-file-input {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+      }
+      .custom-file-label {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container custom-container">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card custom-card">
+            <div class="card-body">
+              {{!-- <h5 class="card-title text-center mb-4">Image Translator</h5> --}}
+                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Image Translator</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+      {{#if user}}
+      <li class="nav-item">
+        <a class="nav-link" href="/Profile">Profile</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/auth/logout">Logout</a>
+      </li>
+      {{else}}
+      <li class="nav-item">
+        <a class="nav-link" href="/login">Login</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/register">Register</a>
+      </li>
+      {{/if}}
+
+    </ul>
+  </div>
+</nav>
+              {{!--  --}}
+              <div class="form-group">
+                <label for="file">Choose an Image:</label>
+                <div class="custom-file">
+                  <input type="file" id="file" class="custom-file-input" />
+                  <label class="custom-file-label" for="file"
+                    >Select file...</label
+                  >
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="languageSelect">Select Language:</label>
+                <select id="languageSelect" class="form-control">
+                  <!-- Language options will be dynamically added here -->
+                </select>
+              </div>
+
+              <div class="form-group">
+                <button id="uploadButton" class="btn btn-primary btn-block">
+                  Process
+                </button>
+              </div>
+
+              <div class="form-group">
+                 
+                <br>
+                {{#if user}}
+                 <textarea
+                  id="extractedTextHere"
+                  cols="30"
+                  rows="5"
+                  class="form-control"
+                  placeholder="Extracted text..." 
+                ></textarea>
+              </div>
+                {{else}}
+                   <textarea
+                  id="extractedTextHere"
+                  cols="30"
+                  rows="5"
+                  class="form-control"
+                  placeholder="Extracted text..." 
+                  disabled                 
+                ></textarea>
+              </div>
+                {{/if}}
+                
+                <div class="form-group">
+                <button class="btn btn-primary btn-block" onclick="editTranslate()">
+                  Edit & Translate
+                </button>
+              </div>
+              <div class="text-center">
+                <div
+                  id="preloader"
+                  class="spinner-border text-primary d-none"
+                  role="status"
+                >
+                  <span class="sr-only">Loading...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-center mt-4">
+        <div class="col-md-8">
+          <div class="card custom-card">
+            <div class="card-body">
+              <h5 class="card-title text-center mb-4">Translated Text</h5>
+              <div class="form-group">
+                <textarea
+                  id="translatedTextHere"
+                  cols="30"
+                  rows="5"
+                  class="form-control"
+                  placeholder="Translated text..."
+                  disabled
+                ></textarea>
+              </div>
+              <div class="text-center">
+                <div
+                  id="preloader1"
+                  class="spinner-border text-primary d-none"
+                  role="status"
+                >
+                  <span class="sr-only">Loading...</span>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="copyToClipboard()">Copy</button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS and Custom Script -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+      const copyToClipboard = () =>{
+        const textarea = document.getElementById('translatedTextHere');
+      
+      // Select the text inside the textarea
+      textarea.select();
+      textarea.setSelectionRange(0, textarea.value.length); // For mobile devices
+      
+      // Copy the selected text to clipboard
+      document.execCommand('copy');
+      
+      // Deselect the textarea to avoid visual disruption
+      textarea.blur();
+
+      alert('Text copied to clipboard!');
+      }
+
+      const editTranslate = () =>{
+        const textarea = document.getElementById("extractedTextHere");
+        if(textarea.disabled){
+          alert("plz login to edit and translate text");
+        }else{
+          if(textarea.value !== ""){
+            sendToBackend(textarea.value);
+          }
+          
+        }
+      }
+
+
+      // Code for updating file input label text
+      const fileInput = document.getElementById("file");
+      const fileInputLabel = document.querySelector(".custom-file-label");
+
+      fileInput.addEventListener("change", () => {
+        const fileName = fileInput.files[0].name;
+        fileInputLabel.innerText = fileName;
+      });
+
+      // Other JavaScript code (including your existing code for image processing)
+
+      let sLang = "af";
+      const languageDropdown = document.getElementById("languageSelect");
+      const loadData = () => {
+        fetch("/api/getdata")
+          .then((res) => res.json())
+          .then((res) => {
+            res.forEach((language) => {
+              const option = document.createElement("option");
+              option.value = language.code;
+              option.textContent = language.name;
+              languageSelect.appendChild(option);
+            });
+
+            languageSelect.addEventListener("change", (event) => {
+              const selectedCode = event.target.value;
+              const selectedLanguage = res.find(
+                (language) => language.code === selectedCode
+              );
+              if (selectedLanguage) {
+                sLang = selectedLanguage.code;
+              }
+            });
+          })
+          .catch((err) => console.error(err));
+      };
+      loadData();
+
+      const uploadButton = document.getElementById("uploadButton");
+      uploadButton.addEventListener("click", () => {
+        const fileInput = document.getElementById("file");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          console.error("No file selected.");
+          return;
+        }
+
+        // Show preloader
+        preloader.classList.remove("d-none");
+
+        const formData = new FormData();
+        formData.append("image", file);
+
+
+        //converts image to text
+        fetch("https://api.api-ninjas.com/v1/imagetotext", {
+          method: "POST",
+          headers: {
+            "X-API-KEY": "rx5B5MFgpUAIN4AzGB1u1FKqdlMrMjqU6tO4yUqp",
+          },
+          body: formData,
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            let str = "";
+            data.map((el) => {
+              str += el.text + " ";
+            });
+
+
+           const tx = document.getElementById("extractedTextHere");
+           tx.value = str;
+            sendToBackend(str);  
+                  
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          })
+          .finally(() => {
+            preloader.classList.add("d-none");
+            str = "";
+          });
+      });
+
+      const sendToBackend = (str) => {
+        preloader1.classList.remove("d-none");
+
+        let obj = { data: str, lang: sLang };
+        fetch("/api/postData", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(obj),
+        })
+          .then((res) => {
+            if (!res.ok) {
+              throw new Error("network error");
+              return;
+            }
+            return res.json();
+          })
+          .then((res) => {
+            document.getElementById("translatedTextHere").innerText =
+              res.data.translatedText;
+            document.getElementById("translatedTextHere").disabled = false;
+            // console.log(res.translatedData.data.translatedText);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => {
+            preloader1.classList.add("d-none");
+          });
+      };
+    </script>
+  </body>
+</html>
