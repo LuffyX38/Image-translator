@@ -39,6 +39,7 @@ app.use("/", homePage);
 app.use("/api/postData", homePage);
 app.use("/auth", require("./routes/auth"));
 
-app.listen("4545", () => {
+const port = process.env.PORT || 3333;
+app.listen(port, () => {
   console.log("server is running on port 4545");
 });
