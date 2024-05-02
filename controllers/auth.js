@@ -12,6 +12,17 @@ const db = mysql.createConnection({
 
 exports.register = async (req, res) => {
   const { name, email, password, passwordConfirm } = req.body;
+  if (name === "" || email === "" || password === "" || passwordConfirm === "") {
+    return res.render("register", {
+      message: "input fields are empty."
+    });
+  }
+
+  if (password.length < 8) {
+    return res.render("register", {
+      message:"Password should be at least of 8 characters."
+    })
+  }
 
   db.query(
     "SELECT * FROM users WHERE email = ?",
