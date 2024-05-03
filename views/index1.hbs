@@ -291,6 +291,7 @@
       });
 
       const sendToBackend = (str) => {
+        document.getElementById("translatedTextHere").value = "";
         preloader1.classList.remove("d-none");
 
         let obj = { data: str, lang: sLang };
@@ -309,7 +310,9 @@
             return res.json();
           })
           .then((res) => {
-            document.getElementById("translatedTextHere").innerText =
+           // document.getElementById("translatedTextHere").innerText =
+             // res.data.translatedText;
+              document.getElementById("translatedTextHere").value =
               res.data.translatedText;
             document.getElementById("translatedTextHere").disabled = false;
             // console.log(res.translatedData.data.translatedText);
